@@ -16,10 +16,10 @@ TFmFuzzy *FmFuzzy;
 
 // Consumo é a saída em Kg
 // Supondo que uma pessoa consuma entre 0 kg a 3 kg de sorvete
-std::vector <float> consumo_baixo(3);
-std::vector <float> consumo_medio(3);
-std::vector <float> consumo_alto(3);
-std::vector <float> consumo(3);
+std::vector <float> consumo_baixo(10);
+std::vector <float> consumo_medio(10);
+std::vector <float> consumo_alto(10);
+std::vector <float> consumo(30);
 
 
 float x=0;
@@ -112,8 +112,8 @@ float max_val(float a, float b)
 void Fuzzy()
 {
 
-	// 1ª regra - If temperatura is poor or dia is rancid, consumo is cheap
-	if ((temperatura >= 0 && temperatura <= 4) || (dia >= 0 && dia <= 3))
+	// 1ª regra - If temperatura is fria ou dia é inicio da semana, consumo é pouco
+	if ((temperatura >= 10 && temperatura <= 17) || (dia >= 0 && dia <= 3))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trapmf(temperatura,-1,0,1,4);
@@ -125,7 +125,7 @@ void Fuzzy()
 		// Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
-		for (int a=0; a<=3; a++)
+		for (int a=0; a<10; a++)
 		{
 			y = trimf(x,0,5,10);
 
@@ -146,7 +146,7 @@ void Fuzzy()
 
 
 	// 2ª regra - If temperatura is good, consumo is average
-	if ((temperatura >= 1) && (temperatura <= 9))
+	if ((temperatura >= 16) && (temperatura <= 29))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trimf(temperatura,1,5,9);
@@ -157,7 +157,7 @@ void Fuzzy()
 		 // Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
-		for (int a=0; a<=30; a++)
+		for (int a=0; a<10; a++)
 		{
 			y = trimf(x,10,15,20);
 
@@ -178,7 +178,7 @@ void Fuzzy()
 
 
 	// 3ª regra - If temperatura is excellent or dia is delicious, consumo is generous
-	if ((temperatura >= 6 && temperatura <= 10) || (dia >= 7 && dia <= 10))
+	if ((temperatura >= 30 && temperatura <= 40) || (dia >= 4 && dia <= 7))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trapmf(temperatura,6,9,10,10);
@@ -190,7 +190,7 @@ void Fuzzy()
 		// Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
-		for (int a=0; a<=30; a++)
+		for (int a=0; a<10; a++)
 		{
 			y = trimf(x,20,25,30);
 
@@ -209,7 +209,7 @@ void Fuzzy()
 
 
 	// Aplicação do Método de Agregação.
-	for (int a=0; a<=3; a++)
+	for (int a=0; a<10; a++)
 	{
 		if (a >= 0 && a <= 10)
 		{
@@ -232,7 +232,7 @@ void Fuzzy()
 	x = 0;
 	total_area = 0;
 	sum = 0;
-	for (int a=0; a<=30; a++)
+	for (int a=0; a<30; a++)
 	{
 		total_area = total_area + consumo.at(a);
 		sum = sum + (x * consumo.at(a));
@@ -245,7 +245,7 @@ void Fuzzy()
 	FmFuzzy->Label1->Caption = FloatToStrF(consumoCentroide,ffFixed,10,2);
 	posicao_do_grafico = consumoCentroide;
 
-	for (int a=0; a<=30; a++)
+	for (int a=0; a<30; a++)
 	{
 		FmFuzzy->chCentroide->Series[0]->YValues->Value[a] = consumo.at(a);
 	}
@@ -320,7 +320,7 @@ void __fastcall TFmFuzzy::tbTemperaturaChange(TObject *Sender)
 	posicao_do_grafico_temperatura = tbTemperatura->Position;
 	lblTemp->Caption = "Temperatura: " + IntToStr(tbTemperatura->Position) + " ºC";
 	chTemperatura->Refresh();
-	// Fuzzy();
+    Fuzzy();
 }
 //---------------------------------------------------------------------------
 void __fastcall TFmFuzzy::tbFoodChange(TObject *Sender)

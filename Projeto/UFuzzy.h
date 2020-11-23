@@ -14,6 +14,7 @@
 #include <VclTee.TeeGDIPlus.hpp>
 #include <VCLTee.TeEngine.hpp>
 #include <VCLTee.TeeProcs.hpp>
+#include <VCLTee.TeeSpline.hpp>
 //---------------------------------------------------------------------------
 class TFmFuzzy : public TForm
 {
