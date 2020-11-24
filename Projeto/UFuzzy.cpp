@@ -16,9 +16,9 @@ TFmFuzzy *FmFuzzy;
 
 // Consumo é a saída em Kg
 // Supondo que uma pessoa consuma entre 0 kg a 3 kg de sorvete
-std::vector <float> consumo_baixo(10);
-std::vector <float> consumo_medio(10);
-std::vector <float> consumo_alto(10);
+std::vector <float> consumo_baixo(30);
+std::vector <float> consumo_medio(30);
+std::vector <float> consumo_alto(30);
 std::vector <float> consumo(30);
 
 
@@ -112,23 +112,21 @@ float max_val(float a, float b)
 void Fuzzy()
 {
 
-	// 1ª regra - If temperatura is fria ou dia é inicio da semana, consumo é pouco
+	// 1ª regra - se temperatura é fria ou dia é inicio da semana, consumo é baixo
 	if ((temperatura >= 10 && temperatura <= 17) || (dia >= 0 && dia <= 3))
 	{
 		// Fuzzificar as entradas.
-		fiTemperatura = trapmf(temperatura,-1,0,1,4);
-		fiDia    = trapmf(dia,-1,0,1,3);
-
+		//fiTemperatura = trapmf(temperatura,-1,0,1,4);
+		fiTemperatura = trimf(temperatura,-1,0,4);
+		fiDia    = trimf(dia,-1,0,3);
 		// Aplicação dos operadores Fuzzy.
 		fop_rule1 = max_val(fiTemperatura,fiDia);
-
 		// Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
-		for (int a=0; a<10; a++)
+		for (int a=0; a<30; a++)
 		{
 			y = trimf(x,0,5,10);
-
 			if (y >= fop_rule1)
 			{
 				consumo_baixo.at(a) = fop_rule1;
@@ -137,30 +135,22 @@ void Fuzzy()
 			{
 				consumo_baixo.at(a) = y;
 			}
-
 			x=x+1;
 		}
 	}
-
-
-
-
 	// 2ª regra - If temperatura is good, consumo is average
 	if ((temperatura >= 16) && (temperatura <= 29))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trimf(temperatura,1,5,9);
-
 		// Aplicação dos operadores Fuzzy.
 		fop_rule2 = max_val(fiTemperatura,0);
-
 		 // Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
 		for (int a=0; a<10; a++)
 		{
 			y = trimf(x,10,15,20);
-
 			if (y >= fop_rule2)
 			{
 				consumo_medio.at(a) = fop_rule2;
@@ -173,20 +163,14 @@ void Fuzzy()
 			x=x+1;
 		}
 	}
-
-
-
-
 	// 3ª regra - If temperatura is excellent or dia is delicious, consumo is generous
 	if ((temperatura >= 30 && temperatura <= 40) || (dia >= 4 && dia <= 7))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trapmf(temperatura,6,9,10,10);
 		fiDia    = trapmf(dia,7,9,10,10);
-
 		// Aplicação dos operadores Fuzzy.
 		fop_rule3 = max_val(fiTemperatura,fiDia);
-
 		// Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
@@ -206,8 +190,6 @@ void Fuzzy()
 			x=x+1;
 		}
 	}
-
-
 	// Aplicação do Método de Agregação.
 	for (int a=0; a<10; a++)
 	{
@@ -226,8 +208,6 @@ void Fuzzy()
 			consumo.at(a) = consumo_alto.at(a);
 		}
 	}
-
-
 	// Implicação dos antecedentes pelo consequente.
 	x = 0;
 	total_area = 0;
@@ -239,17 +219,16 @@ void Fuzzy()
 
 		x=x+1;
 	}
-
-    // Cálculo da Centróide.
-	consumoCentroide = sum/total_area;
-	FmFuzzy->Label1->Caption = FloatToStrF(consumoCentroide,ffFixed,10,2);
+	// Cálculo da Centróide.
+	if (sum > 0) {
+		consumoCentroide = sum/total_area;
+	}
+	FmFuzzy->lblConsuloPessoa->Caption = "Consumo por pessoa: " + FloatToStrF(consumoCentroide,ffFixed,10,2)+ "kg";
 	posicao_do_grafico = consumoCentroide;
-
 	for (int a=0; a<30; a++)
 	{
 		FmFuzzy->chCentroide->Series[0]->YValues->Value[a] = consumo.at(a);
 	}
-
 	FmFuzzy->chConsumo->Refresh();
 	FmFuzzy->chCentroide->Refresh();
 }
@@ -265,14 +244,20 @@ __fastcall TFmFuzzy::TFmFuzzy(TComponent* Owner)
 void __fastcall TFmFuzzy::FormCreate(TObject *Sender)
 {
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a <= 10; a++)
+	// Temperatura 10-40
+	for (unsigned int a = 0; a <= 40; a++)
 	{
 		chTemperatura->Series[0]->AddY(0);
 		chTemperatura->Series[1]->AddY(0);
 		chTemperatura->Series[2]->AddY(0);
+	}
+	// Dia - Semana de 1-7, com 1= segunda - feira
+	for (unsigned i = 0; i <= 7; i++) {
 		chDiaSemana->Series[0]->AddY(0);
 		chDiaSemana->Series[1]->AddY(0);
+        chDiaSemana->Series[2]->AddY(0);
 	}
+	// Consumo de 0 a 3 kg
 	for (unsigned int a = 0; a <= 30; a++)
 	{
 		chConsumo->Series[0]->AddY(0);
@@ -288,19 +273,25 @@ void __fastcall TFmFuzzy::FormCreate(TObject *Sender)
 	chCentroide->Refresh();
 
 	x=0;
-	for (int a=0; a<=10; a++)
+    // Temperatura de 10 a 40 ºC, totalizando 30 possiveis valores
+	for (int a=0; a<=40; a++)
 	{
-		chTemperatura->Series[0]->YValues->Value[a] = trapmf(x,-1,0,1,4);
-		chTemperatura->Series[1]->YValues->Value[a] = trimf(x,1,5,9);
-		chTemperatura->Series[2]->YValues->Value[a] = trapmf(x,6,9,10,10);
+		// Frio abaixo de 17
+		chTemperatura->Series[0]->YValues->Value[a] = trapmf(x, -10, -10, 10,  17);
+		// Agradavél entre 15 e 30
+		chTemperatura->Series[1]->YValues->Value[a] = trimf(x, 15, 22, 30);
+		// Quente: acima de 25
+		chTemperatura->Series[2]->YValues->Value[a] = trapmf(x, 25, 35, 50, 50);
 		x=x+1;
 	}
 
 	x=0;
-	for (int a=0; a<=10; a++)
+	// Dias da semana
+	for (int a=0; a<=7; a++)
 	{
-		chDiaSemana->Series[0]->YValues->Value[a] = trapmf(x,-1,0,1,3);
-		chDiaSemana->Series[1]->YValues->Value[a] = trapmf(x,7,9,10,10);
+		chDiaSemana->Series[0]->YValues->Value[a] = trimf(x, 1, 2, 3);
+		chDiaSemana->Series[1]->YValues->Value[a] = trimf(x, 3, 4, 5);
+		chDiaSemana->Series[2]->YValues->Value[a] = trimf(x, 5, 6, 7);
 		x=x+1;
 	}
 

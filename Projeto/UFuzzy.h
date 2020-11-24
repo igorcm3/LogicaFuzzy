@@ -26,7 +26,7 @@ __published:	// IDE-managed Components
 	TLineSeries *Series2;
 	TLineSeries *Series3;
 	TPanel *Panel1;
-	TLabel *Label1;
+	TLabel *lblConsuloPessoa;
 	TLabel *Label2;
 	TChart *chDiaSemana;
 	TLineSeries *Series4;
@@ -39,6 +39,9 @@ __published:	// IDE-managed Components
 	TTrackBar *tbFood;
 	TChart *chCentroide;
 	TLineSeries *LineSeries3;
+	TLineSeries *Series9;
+	TEdit *ePrecoKg;
+	TLabel *Label1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall tbTemperaturaChange(TObject *Sender);
 	void __fastcall tbFoodChange(TObject *Sender);
