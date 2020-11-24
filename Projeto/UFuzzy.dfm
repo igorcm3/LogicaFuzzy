@@ -679,7 +679,7 @@ object FmFuzzy: TFmFuzzy
     Color = clHighlight
     ParentBackground = False
     TabOrder = 1
-    object lblConsuloPessoa: TLabel
+    object lblConsumoPessoa: TLabel
       Left = 8
       Top = 64
       Width = 209
@@ -708,6 +708,19 @@ object FmFuzzy: TFmFuzzy
       ParentFont = False
       WordWrap = True
       ExplicitWidth = 170
+    end
+    object lblVlrBruto: TLabel
+      Left = 8
+      Top = 86
+      Width = 185
+      Height = 15
+      Caption = 'Estimativa venda vlr bruto: '
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -12
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
     end
   end
   object chDiaSemana: TChart
@@ -890,7 +903,7 @@ object FmFuzzy: TFmFuzzy
     TickMarks = tmTopLeft
     OnChange = tbTemperaturaChange
   end
-  object tbFood: TTrackBar
+  object tbDia: TTrackBar
     Left = 730
     Top = 143
     Width = 222
@@ -900,7 +913,7 @@ object FmFuzzy: TFmFuzzy
     Position = 1
     TabOrder = 5
     TickMarks = tmTopLeft
-    OnChange = tbFoodChange
+    OnChange = tbDiaChange
   end
   object chCentroide: TChart
     Left = 22
@@ -944,7 +957,7 @@ object FmFuzzy: TFmFuzzy
     end
   end
   object ePrecoKg: TEdit
-    Left = 880
+    Left = 874
     Top = 208
     Width = 72
     Height = 21

@@ -109,16 +109,15 @@ float max_val(float a, float b)
 
 //---------------------------------------------------------------------------
 
-void Fuzzy()
+void __fastcall TFmFuzzy::AplicarFuzzy()
 {
 
 	// 1ª regra - se temperatura é fria ou dia é inicio da semana, consumo é baixo
-	if ((temperatura >= 10 && temperatura <= 17) || (dia >= 0 && dia <= 3))
+	if ((temperatura <= 17) || (dia >= 0 && dia <= 3))
 	{
 		// Fuzzificar as entradas.
-		//fiTemperatura = trapmf(temperatura,-1,0,1,4);
-		fiTemperatura = trimf(temperatura,-1,0,4);
-		fiDia    = trimf(dia,-1,0,3);
+		fiTemperatura = trapmf(temperatura, -10, -10, 10,  17);
+		fiDia = trimf(dia, 1, 2, 3);
 		// Aplicação dos operadores Fuzzy.
 		fop_rule1 = max_val(fiTemperatura,fiDia);
 		// Aplicação do Método de Implicação (valores mínimos).
@@ -126,7 +125,7 @@ void Fuzzy()
 		y=0;
 		for (int a=0; a<30; a++)
 		{
-			y = trimf(x,0,5,10);
+			y = trimf(x, 1, 2, 3);
 			if (y >= fop_rule1)
 			{
 				consumo_baixo.at(a) = fop_rule1;
@@ -138,6 +137,8 @@ void Fuzzy()
 			x=x+1;
 		}
 	}
+	/*
+
 	// 2ª regra - If temperatura is good, consumo is average
 	if ((temperatura >= 16) && (temperatura <= 29))
 	{
@@ -190,8 +191,9 @@ void Fuzzy()
 			x=x+1;
 		}
 	}
+    */
 	// Aplicação do Método de Agregação.
-	for (int a=0; a<10; a++)
+	for (int a=0; a<30; a++)
 	{
 		if (a >= 0 && a <= 10)
 		{
@@ -223,14 +225,15 @@ void Fuzzy()
 	if (sum > 0) {
 		consumoCentroide = sum/total_area;
 	}
-	FmFuzzy->lblConsuloPessoa->Caption = "Consumo por pessoa: " + FloatToStrF(consumoCentroide,ffFixed,10,2)+ "kg";
+	lblConsumoPessoa->Caption = "Consumo por pessoa: " + FloatToStrF(consumoCentroide,ffFixed,10,2)+ "kg";
+	lblVlrBruto->Caption = "Estimativa venda vlr bruto:  R$ " + FloatToStrF((consumoCentroide * StrToFloatDef(ePrecoKg->Text, 0)),ffFixed,10,2);;
 	posicao_do_grafico = consumoCentroide;
 	for (int a=0; a<30; a++)
 	{
-		FmFuzzy->chCentroide->Series[0]->YValues->Value[a] = consumo.at(a);
+		chCentroide->Series[0]->YValues->Value[a] = consumo.at(a);
 	}
-	FmFuzzy->chConsumo->Refresh();
-	FmFuzzy->chCentroide->Refresh();
+	chConsumo->Refresh();
+	chCentroide->Refresh();
 }
 
 
@@ -289,8 +292,11 @@ void __fastcall TFmFuzzy::FormCreate(TObject *Sender)
 	// Dias da semana
 	for (int a=0; a<=7; a++)
 	{
+		// Inicio da semana
 		chDiaSemana->Series[0]->YValues->Value[a] = trimf(x, 1, 2, 3);
+        // Meio da semana
 		chDiaSemana->Series[1]->YValues->Value[a] = trimf(x, 3, 4, 5);
+		//Fim da semana
 		chDiaSemana->Series[2]->YValues->Value[a] = trimf(x, 5, 6, 7);
 		x=x+1;
 	}
@@ -311,14 +317,14 @@ void __fastcall TFmFuzzy::tbTemperaturaChange(TObject *Sender)
 	posicao_do_grafico_temperatura = tbTemperatura->Position;
 	lblTemp->Caption = "Temperatura: " + IntToStr(tbTemperatura->Position) + " ºC";
 	chTemperatura->Refresh();
-    Fuzzy();
+	AplicarFuzzy();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFmFuzzy::tbFoodChange(TObject *Sender)
+void __fastcall TFmFuzzy::tbDiaChange(TObject *Sender)
 {
-	dia = tbFood->Position;
-	posicao_do_grafico_dia = tbFood->Position;
-	switch (tbFood->Position) {
+	dia = tbDia->Position;
+	posicao_do_grafico_dia = tbDia->Position;
+	switch (tbDia->Position) {
 		case 1: lblDia->Caption = "Dia = Segunda - feira";
 			break;
 		case 2: lblDia->Caption = "Dia = Terça - feira";
@@ -338,7 +344,7 @@ void __fastcall TFmFuzzy::tbFoodChange(TObject *Sender)
 			break;
 	}
 	chDiaSemana->Refresh();
-	//Fuzzy();
+	AplicarFuzzy();
 }
 //---------------------------------------------------------------------------
 void __fastcall TFmFuzzy::chCentroideAfterDraw(TObject *Sender)

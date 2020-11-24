@@ -26,7 +26,7 @@ __published:	// IDE-managed Components
 	TLineSeries *Series2;
 	TLineSeries *Series3;
 	TPanel *Panel1;
-	TLabel *lblConsuloPessoa;
+	TLabel *lblConsumoPessoa;
 	TLabel *Label2;
 	TChart *chDiaSemana;
 	TLineSeries *Series4;
@@ -36,15 +36,16 @@ __published:	// IDE-managed Components
 	TLineSeries *Series7;
 	TLineSeries *Series8;
 	TTrackBar *tbTemperatura;
-	TTrackBar *tbFood;
+	TTrackBar *tbDia;
 	TChart *chCentroide;
 	TLineSeries *LineSeries3;
 	TLineSeries *Series9;
 	TEdit *ePrecoKg;
 	TLabel *Label1;
+	TLabel *lblVlrBruto;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall tbTemperaturaChange(TObject *Sender);
-	void __fastcall tbFoodChange(TObject *Sender);
+	void __fastcall tbDiaChange(TObject *Sender);
 	void __fastcall chCentroideAfterDraw(TObject *Sender);
 	void __fastcall chTemperaturaAfterDraw(TObject *Sender);
 	void __fastcall chDiaSemanaAfterDraw(TObject *Sender);
@@ -53,6 +54,7 @@ __published:	// IDE-managed Components
 private:	// User declarations
 public:		// User declarations
 	__fastcall TFmFuzzy(TComponent* Owner);
+    void __fastcall AplicarFuzzy();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TFmFuzzy *FmFuzzy;
