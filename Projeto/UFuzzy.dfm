@@ -682,7 +682,7 @@ object FmFuzzy: TFmFuzzy
     object lblConsumoPessoa: TLabel
       Left = 8
       Top = 64
-      Width = 209
+      Width = 155
       Height = 15
       Caption = 'Consumo por pessoa em KG: '
       Font.Charset = DEFAULT_CHARSET
@@ -712,7 +712,7 @@ object FmFuzzy: TFmFuzzy
     object lblVlrBruto: TLabel
       Left = 8
       Top = 86
-      Width = 185
+      Width = 143
       Height = 15
       Caption = 'Estimativa venda vlr bruto: '
       Font.Charset = DEFAULT_CHARSET
@@ -898,7 +898,6 @@ object FmFuzzy: TFmFuzzy
     Width = 222
     Height = 41
     Max = 40
-    Position = 10
     TabOrder = 4
     TickMarks = tmTopLeft
     OnChange = tbTemperaturaChange
@@ -963,5 +962,6 @@ object FmFuzzy: TFmFuzzy
     Height = 21
     NumbersOnly = True
     TabOrder = 7
+    Text = '12,66'
   end
 end
