@@ -35,6 +35,7 @@ float foconsumo     = 0;
 float fop_rule1 = 0;
 float fop_rule2 = 0;
 float fop_rule3 = 0;
+float fop_rule4 = 0;
 
 // Variáveis de auxilio ao cálculo da centróide.
 float sum = 0;
@@ -113,7 +114,7 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 {
 
 	// 1ª regra - se temperatura é fria ou dia é inicio da semana, consumo é baixo
-	if ((temperatura <= 17) || (dia >= 0 && dia <= 3))
+	if ((temperatura <= 17) && (dia >= 0 && dia <= 3))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trapmf(temperatura, -10, -10, 10,  17);
@@ -125,7 +126,6 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 		y=0;
 		for (int a=0; a<30; a++)
 		{
-			//y = trimf(x, 1, 2, 3);
 			y = trapmf(temperatura, -10, -10, 10,  17);
 			if (y >= fop_rule1)
 			{
@@ -141,11 +141,11 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 
 
 	// 2ª regra - Se temp for maior que 17 e menor/igual a 25
-	if (((temperatura >= 15) && (temperatura <= 30)) || (dia >= 2 && dia <=4))
+	if (((temperatura >= 15) && (temperatura <= 30)) && (dia >= 2 && dia <=4))
 	{
 		// Fuzzificar as entradas.
 		fiTemperatura = trimf(temperatura, 15, 22, 30);
-        fiDia = trimf(dia, 2, 3, 4);
+		fiDia = trimf(dia, 2, 3, 4);
 		// Aplicação dos operadores Fuzzy.
 		fop_rule2 = max_val(fiTemperatura,fiDia);
 		 // Aplicação do Método de Implicação (valores mínimos).
@@ -166,21 +166,21 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 			x=x+1;
 		}
 	}
-    /*
-	// 3ª regra - If temperatura is excellent or dia is delicious, consumo is generous
-	if ((temperatura >= 30 && temperatura <= 40) || (dia >= 4 && dia <= 7))
+
+	// 3ª regra - Temperatura alta e fins de semana
+	if ((temperatura >= 30) && (dia >= 5))
 	{
 		// Fuzzificar as entradas.
-		fiTemperatura = trapmf(temperatura,6,9,10,10);
-		fiDia    = trapmf(dia,7,9,10,10);
+		fiTemperatura = trapmf(temperatura, 25, 35, 50, 50);
+		fiDia    = trimf(dia, 5, 6, 7);
 		// Aplicação dos operadores Fuzzy.
 		fop_rule3 = max_val(fiTemperatura,fiDia);
 		// Aplicação do Método de Implicação (valores mínimos).
 		x=0;
 		y=0;
-		for (int a=0; a<10; a++)
+		for (int a=0; a<30; a++)
 		{
-			y = trimf(x,20,25,30);
+			y = trapmf(x, 25, 35, 50, 50);
 
 			if (y >= fop_rule3)
 			{
@@ -194,7 +194,34 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 			x=x+1;
 		}
 	}
-    */
+
+	// 4ª regra - Temperatura alta e mas n pe fim de semana, vai vender mediano
+	if ((temperatura >= 30) && (dia >= 1 && dia <= 4))
+	{
+		// Fuzzificar as entradas.
+		fiTemperatura = trapmf(temperatura, 25, 35, 50, 50);
+		fiDia    = trimf(dia, 2, 3, 4);
+		// Aplicação dos operadores Fuzzy.
+		fop_rule4 = max_val(fiTemperatura,fiDia);
+		// Aplicação do Método de Implicação (valores mínimos).
+		x=0;
+		y=0;
+		for (int a=0; a<30; a++)
+		{
+			trapmf(temperatura, 25, 35, 50, 50);
+
+			if (y >= fop_rule4)
+			{
+				consumo_alto.at(a) = fop_rule4;
+			}
+			else
+			{
+				consumo_alto.at(a) = y;
+			}
+
+			x=x+1;
+		}
+	}
 	// Aplicação do Método de Agregação.
 	for (int a=0; a<30; a++)
 	{
@@ -226,10 +253,11 @@ void __fastcall TFmFuzzy::AplicarFuzzy()
 	}
 	// Cálculo da Centróide.
 	if (sum > 0) {
-		consumoCentroide = (sum/total_area)/10;  // DIVIDE POR 10 PARA TER CONSUMO EM KG
+		consumoCentroide = (sum/total_area);
 	}
-	lblConsumoPessoa->Caption = "Consumo por pessoa: " + FloatToStrF(consumoCentroide,ffFixed,10,2)+ "kg";
-	lblVlrBruto->Caption = "Estimativa venda vlr bruto:  R$ " + FloatToStrF((consumoCentroide * StrToFloatDef(ePrecoKg->Text, 0)),ffFixed,10,2);;
+    // CONSMO DIVIDE POR 10 PARA TER CONSUMO EM KG
+	lblConsumoPessoa->Caption = "Consumo por pessoa: " + FloatToStrF((consumoCentroide/10),ffFixed,10,2)+ "kg";
+	lblVlrBruto->Caption = "Estimativa venda vlr bruto:  R$ " + FloatToStrF(((consumoCentroide/10) * StrToFloatDef(ePrecoKg->Text, 0)),ffFixed,10,2);;
 	posicao_do_grafico = consumoCentroide;
 	for (int a=0; a<30; a++)
 	{
